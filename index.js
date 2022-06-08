@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 
-const inquirer              = require('inquirer');
-const config                = require('./config/index.config.js');
 const Cortex                = require('ion-cortex');
 const chalk                 = require("chalk");
 const figlet                = require("figlet");
@@ -11,10 +9,9 @@ const colors                = require('ansi-colors');
 const questions             = require('./questions')()
 
 class Floki {
-    constructor({questions, config}){
+    constructor({questions}){
         
         /** init cortex */
-        this.config     = config
         this.questions  = questions
         this.cortex     = null
         this.type       = ""
@@ -48,7 +45,7 @@ class Floki {
         this.cortex = new Cortex({
             prefix: prefix,
             url: uri,
-            type: config.dotEnv.CORTEX_TYPE,
+            type: 'flokey',
             state: ()=>{
                 return {} 
             },
@@ -328,4 +325,4 @@ class Floki {
 
 }
 
-const floki = new Floki({questions, config})
+const floki = new Floki({questions})
