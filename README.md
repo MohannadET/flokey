@@ -1,3 +1,5 @@
+you will need to install the agent and configure it : https://github.com/qantra-io/flokey-minion
+
 # Flokey CLI
 
 ## Installation
