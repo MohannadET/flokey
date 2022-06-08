@@ -8,7 +8,7 @@ module.exports = (cortex) => {
                     name: 'redisURI',
                     type: "input",
                     message: 'Please enter your Redis URI?',
-                    default: 'redis://dev:Q9eqHXDMN97W@139.59.142.183:6200'
+                    default: 'redis://127.0.0.1:6379'
                 }
             ]
             return inquirer.prompt(question)
