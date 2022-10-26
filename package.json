@@ -1,6 +1,6 @@
 {
   "name": "flokey",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Automation & Provisioning Tool",
   "bin": {
     "flokey": "./index.js"
