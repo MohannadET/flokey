@@ -115,7 +115,7 @@ class Floki {
                 // run complete callback
                 onComplete.apply(this);
             }
-        }, 1000);
+        }, 2000);
     }
 
     async _init(){
