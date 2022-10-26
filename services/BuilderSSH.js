@@ -78,7 +78,7 @@ class BuilderSSH {
             
         } catch (e) {
             console.log(e);
-            cb(e);
+            return(e);
         }
     }
 
