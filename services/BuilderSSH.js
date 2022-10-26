@@ -12,7 +12,7 @@ class BuilderSSH {
         this.hostsW_Hostname    = []
         setInterval(() => {
             this._getHosts()
-        }, 5000);
+        }, 2000);
     }
 
     _getHosts(){
