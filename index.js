@@ -7,7 +7,8 @@ const figlet                = require("figlet");
 const _progress             = require('cli-progress');
 const colors                = require('ansi-colors');
 const questions             = require('./questions')()
-
+const BuilderSSH            = require('./services/BuilderSSH')
+const config                = require('./config/index.config')
 class Floki {
     constructor({questions}){
         
@@ -15,6 +16,7 @@ class Floki {
         this.questions  = questions
         this.cortex     = null
         this.type       = ""
+        
         this._init()
     }
     _success(msg) {
@@ -49,8 +51,8 @@ class Floki {
             state: ()=>{
                 return {} 
             },
-            activeDelay: "1000ms",
-            idlDelay: "3000ms",
+            activeDelay: 1000,
+            idlDelay: 1000,
         });
 
     }
@@ -116,19 +118,19 @@ class Floki {
         }, 1000);
     }
 
-    _init(){
+    async _init(){
         console.log(
           chalk.green(
-            figlet.textSync("FLOKI", {
+            figlet.textSync("FLOKEY", {
             //   font: "Ghost",
               horizontalLayout: "default",
               verticalLayout: "default",
             })
           )
         );
-
         this._startSequence()
     };
+
 
     async _startSequence(){
         await this._connect()
@@ -137,27 +139,51 @@ class Floki {
                 await this._operationStart()
             })
             // await
-        }, 3000);
+        }, 1000);
     }
 
     async _connect(){
-        const { redisURI }      = await this.questions.redisURIQuestion()
-        const { cortexPrefix }  = await this.questions.cortexPrefixQuestion()
-        await this._cortexConnect(redisURI, cortexPrefix)
+        if(config.dotEnv.CORTEX_REDIS && config.dotEnv.CORTEX_PREFIX){
+            await this._cortexConnect(config.dotEnv.CORTEX_REDIS, config.dotEnv.CORTEX_PREFIX)
+        } else {
+            const { redisURI }      = await this.questions.redisURIQuestion()
+            const { cortexPrefix }  = await this.questions.cortexPrefixQuestion()
+            await this._cortexConnect(redisURI, cortexPrefix)
+        }
+        
+        this.builder            = new BuilderSSH({cortex:this.cortex})
+
     }
 
     async _operationStart(){
-        const { MODE }    = await this.questions.operateQuestion()
-        const { NODE } = await this.questions.nodesQuestion(this.cortex)
-        this.type = `${NODE}_minion`
-
-        if(MODE === 0){
-            await this._envModeOperation()
-        }else if(MODE === 1){
-            await this._remoteExecutionOperation()
+        const { operationMode } = await this.questions.operationModeQuestion()
+        if(operationMode === 0){
+            const { operationType }    = await this.questions.operationTypeQuestion()
+            const { NODE } = await this.questions.nodesQuestion(this.cortex)
+            this.type = `${NODE}_minion`
+            if(operationType === 0){
+                await this._envModeOperation()
+            }else if(operationType === 1){
+                await this._remoteExecutionOperation()
+            }
+        } else if(operationMode === 1){
+            const { HOST } = await this.questions.hostsQuestion(this.builder)
+            let hostId = HOST.split('@')[0].trim()
+            if(config.dotEnv.SSH_UER === 'root') this._info(`Please be advised that ssh connection will be initiated with default user 'root', if you want to change it provide it in the env file (SSH_USER)`)
+            await this.builder.connect(hostId)
+            this._info(`Please type exit to leave cmd mode.`)
+            await this.sessionBuilder(hostId)
         }
 
         await this._restartOperation()
+    }
+
+    async sessionBuilder(hostId){
+        const { CMD } = await this.questions.cmdQuestion(hostId)
+        if(CMD.trim() === 'exit') return
+        let msg  = await this.builder.checkCommand(hostId, CMD)
+        this._success(msg)
+        return this.sessionBuilder(hostId)
     }
 
     async _envModeOperation(){

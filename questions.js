@@ -1,6 +1,7 @@
 const inquirer              = require('inquirer');
+inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 
-module.exports = (cortex) => {
+module.exports = () => {
     return {
         redisURIQuestion : () => {
             const question = [
@@ -27,11 +28,39 @@ module.exports = (cortex) => {
             return inquirer.prompt(question)
         
         },
-
-        operateQuestion : () => {
+        chooseEnvQuestion: () => {
             const question = [
                 {
-                    name: 'MODE',
+                    name: 'env',
+                    type: "list",
+                    message: 'Please choose the environment?',
+                    choices: ['dev', 'prd'],
+                    default: 'dev',
+                }
+            ]
+            return inquirer.prompt(question)
+        
+        },
+        operationModeQuestion : () => {
+            const question = [
+                {
+                    name: 'operationMode',
+                    type: "list",
+                    message: 'Please choose operation mode?',
+                    choices: ['Hosts', 'Services'],
+                    default: 'Services',
+                    filter(val) {
+                        return val.includes('Services') ? 0 : 1
+                    }
+                }
+            ]
+            return inquirer.prompt(question)
+        
+        },
+        operationTypeQuestion : () => {
+            const question = [
+                {
+                    name: 'operationType',
                     type: "list",
                     message: 'Please choose operation mode?',
                     choices: ['Configure .env', 'Remote Command Execution'],
@@ -43,7 +72,18 @@ module.exports = (cortex) => {
             return inquirer.prompt(question)
         
         },
-        
+
+        hostsQuestion : async (builder) => {
+            const question = [
+                {
+                    name: 'HOST',
+                    type: "search-list",
+                    message: 'Please choose Host to configure?',
+                    choices: builder.getHosts(),
+                }
+            ]
+            return inquirer.prompt(question)
+        },
         nodesQuestion : async (cortex) => {
             const question = [
                 {
@@ -56,12 +96,20 @@ module.exports = (cortex) => {
             return inquirer.prompt(question)
         },
         
-        cmdQuestion : () => {
-            const question = [
+        cmdQuestion : (hostId) => {
+            const question = hostId? 
+            [
                 {
                     name: 'CMD',
                     type: "input",
-                    message: 'Please enter command to be executed..',
+                    message: `${hostId}:$`,
+                }
+            ] : 
+            [
+                {
+                    name: 'CMD',
+                    type: "input",
+                    message:`Please enter command to be executed..`,
                     default: 'cd .. && ll'
                 }
             ]
