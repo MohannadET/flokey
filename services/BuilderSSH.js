@@ -23,13 +23,16 @@ class BuilderSSH {
                 Object.keys(this.cortex.nodes[type]).forEach(hostId => {
                     // console.log(hostId)
                     console.log(this.cortex.nodes[type][hostId].state.os.network)
-                    let ip = this.cortex.nodes[type][hostId].state.os.network.eth1? this.cortex.nodes[type][hostId].state.os.network.eth1[0] : []
-                    this.hosts[hostId] = {
-                        hostname:this.cortex.nodes[type][hostId].state.os.hostname,
-                        ip,
-                        type,
+                    if(this.cortex.nodes[type][hostId].state.os.network && this.cortex.nodes[type][hostId].state.os.network.eth1){
+                        let ip = this.cortex.nodes[type][hostId].state.os.network.eth1[0] 
+                        this.hosts[hostId] = {
+                            hostname:this.cortex.nodes[type][hostId].state.os.hostname,
+                            ip,
+                            type,
+                        }
+                        list.push(`${hostId} @ ${this.cortex.nodes[type][hostId].state.os.hostname}`)
                     }
-                    list.push(`${hostId} @ ${this.cortex.nodes[type][hostId].state.os.hostname}`)
+                    
                 })
             })
         }
