@@ -23,9 +23,6 @@
     "inquirer": "^8.2.4",
     "inquirer-search-list": "^1.2.6",
     "ion-cortex": "^1.4.9",
-    "node-ssh": "^13.0.0",
-    "vorpal": "^1.12.0",
-    "vorpal-less": "^0.0.13",
-    "vorpal-repl": "^1.1.8"
+    "node-ssh": "^13.0.0"
   }
 }
