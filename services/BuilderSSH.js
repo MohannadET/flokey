@@ -22,7 +22,7 @@ class BuilderSSH {
                 // console.log(type)
                 Object.keys(this.cortex.nodes[type]).forEach(hostId => {
                     // console.log(hostId)
-                    console.log(this.cortex.nodes[type][hostId].state.os.network)
+                    // console.log(this.cortex.nodes[type][hostId].state.os.network)
                     if(this.cortex.nodes &&
                         this.cortex.nodes[type][hostId].state && 
                         this.cortex.nodes[type][hostId].state.os.network && 
