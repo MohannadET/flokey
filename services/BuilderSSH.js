@@ -22,7 +22,7 @@ class BuilderSSH {
                 // console.log(type)
                 Object.keys(this.cortex.nodes[type]).forEach(hostId => {
                     // console.log(hostId)
-                    // console.log(this.cortex.nodes[type][hostId].state.os.network)
+                    console.log(this.cortex.nodes[type][hostId].state.os.network)
                     let ip = this.cortex.nodes[type][hostId].state.os.network.eth1? this.cortex.nodes[type][hostId].state.os.network.eth1[0] : []
                     this.hosts[hostId] = {
                         hostname:this.cortex.nodes[type][hostId].state.os.hostname,
