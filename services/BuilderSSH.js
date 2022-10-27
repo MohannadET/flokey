@@ -10,9 +10,12 @@ class BuilderSSH {
         this.cwd                = '/root'
         this.hosts              = {}
         this.hostsW_Hostname    = []
-        setInterval(() => {
+        setTimeout(() => {
             this._getHosts()
         }, 2000);
+        setInterval(() => {
+            this._getHosts()
+        }, 15000);
     }
 
     _getHosts(){
