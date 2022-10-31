@@ -8,7 +8,7 @@ module.exports = () => {
                 {
                     name: 'redisURI',
                     type: "input",
-                    message: 'Please enter your Redis URI?',
+                    message: 'Enter your Redis URI:',
                     default: 'redis://127.0.0.1:6379'
                 }
             ]
@@ -21,7 +21,7 @@ module.exports = () => {
                 {
                     name: 'cortexPrefix',
                     type: "input",
-                    message: 'Please enter your Cortex Prefix?',
+                    message: 'Enter your Cortex Prefix:',
                     default: 'none'
                 }
             ]
@@ -33,7 +33,7 @@ module.exports = () => {
                 {
                     name: 'env',
                     type: "list",
-                    message: 'Please choose the environment?',
+                    message: 'Choose the environment:',
                     choices: ['dev', 'prd'],
                     default: 'dev',
                 }
@@ -46,7 +46,7 @@ module.exports = () => {
                 {
                     name: 'operationMode',
                     type: "list",
-                    message: 'Please choose operation mode?',
+                    message: 'Select operation mode:',
                     choices: ['Hosts', 'Services'],
                     default: 'Services',
                     filter(val) {
@@ -78,7 +78,7 @@ module.exports = () => {
                 {
                     name: 'HOST',
                     type: "search-list",
-                    message: 'Please choose Host to configure?',
+                    message: 'Select Host:',
                     choices: builder.getHosts(),
                 }
             ]
@@ -109,7 +109,7 @@ module.exports = () => {
                 {
                     name: 'CMD',
                     type: "input",
-                    message:`Please enter command to be executed..`,
+                    message:`Enter command to be executed:`,
                     default: 'cd .. && ll'
                 }
             ]
@@ -138,7 +138,7 @@ module.exports = () => {
                 {
                     name: 'ENV_MODE',
                     type: "list",
-                    message: 'Please choose .env editing mode?',
+                    message: 'Choose .env editing mode:',
                     choices: ['Single Key-Value.', 'Whole file edit.'],
                     filter(val) {
                         return val.includes('Key-Value') ? 0 : 1
@@ -164,7 +164,7 @@ module.exports = () => {
                 {
                     name: 'ENV_NEW_KEY',
                     type: "input",
-                    message: `Please enter new key property:`,
+                    message: `Enter new key property:`,
                     default:`TEST`
                 }
             ]
@@ -177,7 +177,7 @@ module.exports = () => {
                 {
                     name: 'ENV_VALUE',
                     type: "input",
-                    message: `Please enter a value for your new key [${key}]:`,
+                    message: `Enter a value for your new key [${key}]:`,
                 }
             ]
             return inquirer.prompt(question)
@@ -189,7 +189,7 @@ module.exports = () => {
                 {
                     name: 'ENV_OP',
                     type: "list",
-                    message: 'Please choose operation to perform on key?',
+                    message: 'Choose operation to perform on key?',
                     choices: ['get','set','delete'],
                 }
             ]
@@ -202,7 +202,7 @@ module.exports = () => {
                 {
                     name: 'ENV_KEY',
                     type: "list",
-                    message: 'Please choose key to replace its value?',
+                    message: 'Choose key to replace its value?',
                     choices: envKeys,
                 }
             ]
@@ -214,7 +214,7 @@ module.exports = () => {
                 {
                     name: 'ENV_VALUE',
                     type: "input",
-                    message: `Please enter new value for ${key}:`,
+                    message: `Enter new value for ${key}:`,
                     default:`${env[key]}`
                 }
             ]

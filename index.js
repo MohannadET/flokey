@@ -9,6 +9,8 @@ const colors                = require('ansi-colors');
 const questions             = require('./questions')()
 const BuilderSSH            = require('./services/BuilderSSH')
 const config                = require('./config/index.config')
+const glob                  = require('glob');
+
 class Floki {
     constructor({questions}){
         
@@ -16,31 +18,41 @@ class Floki {
         this.questions  = questions
         this.cortex     = null
         this.type       = ""
-        
+        this.pattern    = '*.flokey.js'
+        this.config     = null
         this._init()
     }
+    
     _success(msg) {
         console.log(
-            chalk.whiteBright.bgMagenta.bold(msg)
+            chalk.magenta.bold(msg)
         );
     }
 
     _failure(msg){
         console.log(
-            chalk.whiteBright.bgRed.bold(msg)
+            chalk.red.bold(msg)
         );
     }
 
     _warning(msg){
         console.log(
-            chalk.whiteBright.bgYellow.bold(msg)
+            chalk.yellow.bold(msg)
         );
     }
 
     _info(msg){
         console.log(
-            chalk.whiteBright.bgMagenta.bold(msg)
+            chalk.magenta.bold(msg)
         );
+    }
+
+    _glob = (pattern)=>{
+        return new Promise(async (resolve, reject)=>{
+          glob(pattern, {}, function (er, files) {
+            resolve(files);
+          });
+        })
     }
 
     async _cortexConnect (uri, prefix){
@@ -119,6 +131,8 @@ class Floki {
     }
 
     async _init(){
+        this._checkConfigArg();
+        await this._checkConfigFileExistsAndLoad();
         console.log(
           chalk.green(
             figlet.textSync("FLOKEY", {
@@ -131,6 +145,18 @@ class Floki {
         this._startSequence()
     };
 
+    _checkConfigArg(){
+        if(process.argv.length <= 2 && !process.argv[2]) throw Error("Flokey wasn't provided by a config file (ex *.flokey.js).");
+        let fileArgSplit = process.argv[process.argv.length - 1].split('.')
+        if(fileArgSplit.length !== 3 || fileArgSplit[1] !== 'flokey' || fileArgSplit[2] !== 'js') throw Error("Invalid Flokey config file format should follow '*.flokey.js' convention.") 
+    }
+
+    async _checkConfigFileExistsAndLoad(){
+        let conf    = await this._glob(`./${this.pattern}`);
+        if(conf.length === 0) throw Error("Flokey config file wasn't found in current directory.")
+        this.config = require(`${conf}`)
+        // console.log('')
+    }
 
     async _startSequence(){
         await this._connect()
@@ -143,29 +169,31 @@ class Floki {
     }
 
     async _connect(){
-        if(config.dotEnv.CORTEX_REDIS && config.dotEnv.CORTEX_PREFIX){
-            await this._cortexConnect(config.dotEnv.CORTEX_REDIS, config.dotEnv.CORTEX_PREFIX)
+        if(this.config.redisURI && this.config.cortexPrefix){
+            await this._cortexConnect(this.config.redisURI, this.config.cortexPrefix)
         } else {
             const { redisURI }      = await this.questions.redisURIQuestion()
             const { cortexPrefix }  = await this.questions.cortexPrefixQuestion()
             await this._cortexConnect(redisURI, cortexPrefix)
         }
         
-        this.builder            = new BuilderSSH({cortex:this.cortex})
+        this.builder            = new BuilderSSH({cortex:this.cortex, config:this.config})
 
     }
 
     async _operationStart(){
         const { operationMode } = await this.questions.operationModeQuestion()
         if(operationMode === 0){
-            const { operationType }    = await this.questions.operationTypeQuestion()
+            // const { operationType }    = await this.questions.operationTypeQuestion()
             const { NODE } = await this.questions.nodesQuestion(this.cortex)
             this.type = `${NODE}_minion`
-            if(operationType === 0){
-                await this._envModeOperation()
-            }else if(operationType === 1){
-                await this._remoteExecutionOperation()
-            }
+            await this._remoteExecutionOperation()
+
+            // if(operationType === 0){
+            //     await this._envModeOperation()
+            // }else if(operationType === 1){
+            //     await this._remoteExecutionOperation()
+            // }
         } else if(operationMode === 1){
             const { HOST } = await this.questions.hostsQuestion(this.builder)
             let hostId = HOST.split('@')[0].trim()

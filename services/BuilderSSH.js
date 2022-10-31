@@ -1,10 +1,10 @@
 const {NodeSSH}             = require('node-ssh')
-const config = require('../config/index.config')
 const ssh                   = new NodeSSH()
 
 class BuilderSSH {
-    constructor({cortex}){
+    constructor({cortex, config}){
         this.cortex             = cortex
+        this.config             = config    
         this.privKey            = null
         this.user               = null
         this.cwd                = '/root'
@@ -63,8 +63,8 @@ class BuilderSSH {
         let ip = host.ip
         await ssh.connect({
             host: `${ip}`, // `${ip}`
-            username: config.dotEnv.SSH_USER,
-            privateKeyPath: config.dotEnv.PRIVATE_KEY_PATH
+            username: this.config.sshUser || 'root',
+            privateKeyPath: this.config.privateKeyPath,
         })
     }
 
