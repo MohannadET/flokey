@@ -27,7 +27,7 @@ const SSH_USER                          = process.env.SSH_USER || 'root'
 
 const config                            = require(`./envs/${ENV}.js`);
 
-if(!PRIVATE_KEY_PATH) throw Error('A Private key path must be provided in env (PRIVATE_KEY_PATH)');
+// if(!PRIVATE_KEY_PATH) throw Error('A Private key path must be provided in env (PRIVATE_KEY_PATH)');
 
 config.dotEnv = {
     SERVICE_NAME,
