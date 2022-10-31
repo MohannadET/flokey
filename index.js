@@ -153,10 +153,10 @@ class Floki {
     }
 
     async _checkConfigFileExistsAndLoad(){
-        let conf    = await this._glob(`./${this.pattern}`);
+        let conf    = await this._glob(`${process.cwd()}/${this.pattern}`);
         if(conf.length === 0) throw Error("Flokey config file wasn't found in current directory.")
+        console.log(conf)
         this.config = require(`${conf}`)
-        // console.log('')
     }
 
     async _startSequence(){
