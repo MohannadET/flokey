@@ -20,6 +20,7 @@ class Floki {
         this.type       = ""
         this.pattern    = '*.flokey.js'
         this.config     = null
+        console.log(process.cwd())
         this._init()
     }
     
